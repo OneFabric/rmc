@@ -4,24 +4,20 @@ apiKey=$1
 
 # TODO: make parameters configurable at run time
 
-# TODO: make movie name configurable at run time
-
-# TODO: loop through movies.txt and obtain list of movies to query
+# loop through movies.txt and obtain list of movies to query
     
     # #https://stackoverflow.com/questions/10929453/read-a-file-line-by-line-assigning-the-value-to-a-variable
     while IFS= read -r line
     do movieList[index]=$line; ((index=index+1)) 
     done < ../input/movies.txt
 
-    # testing 
-    # echo ${movieList[@]} # prints contents of array
+    index=0
 
-# TODO: For each movie...
+#  For each movie...
 
     for movie in "${movieList[@]}"
     do
-        # echo "$movie" # print each movie
-        # TODO: query API to obtain list of movies 
+        # query API to obtain list of movies 
 
             curl -vvv -G \
                 -o ../output/"$movie"Response.txt \
@@ -31,9 +27,25 @@ apiKey=$1
             	--header "x-rapidapi-key: $apiKey" \
                 --url 'https://utelly-tv-shows-and-movies-availability-v1.p.rapidapi.com/lookup?' \
 
-        # TODO: parse resulting data to obtain information
+        # parse resulting data to obtain information
+            
+            result=$(jq .results ../output/"$movie"Response.txt)
+
+            # if movie is not available for streaming, '[]' will be returned.
+            if [ "$result" != "[]" ] 
+            then 
+                echo "No result. Setting foundList to movie at index"
+                foundList[$index]=$movie
+                atLeastOneMovie=1
+            fi
+
+        ((index=index+1)) 
     done
-   
 
-
-# TODO: conditionally send email to myself
+# conditionally send notification
+    
+    if [ $atLeastOneMovie -ge 1 ]
+    then 
+        notification="The following movies are now available: ${foundList[@] }"
+        osascript -e `say ${notification}`
+    fi
