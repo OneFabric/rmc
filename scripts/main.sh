@@ -1,5 +1,7 @@
 #!/bin/bash
 
+apiKey=$1 
+
 # TODO: make parameters configurable at run time
 
 # TODO: make movie name configurable at run time
@@ -18,10 +20,20 @@
 
     for movie in "${movieList[@]}"
     do
-    # echo "$movie" # print each movie
-    done
-    # TODO: query API to obtain list of movies 
+        # echo "$movie" # print each movie
+        # TODO: query API to obtain list of movies 
 
-    # TODO: parse resulting data to obtain information
+            curl -vvv -G \
+                -o ../output/"$movie"Response.txt \
+                --data-urlencode "term=${movie}" \
+                --data-urlencode "country=us" \
+            	--header 'x-rapidapi-host: utelly-tv-shows-and-movies-availability-v1.p.rapidapi.com' \
+            	--header "x-rapidapi-key: $apiKey" \
+                --url 'https://utelly-tv-shows-and-movies-availability-v1.p.rapidapi.com/lookup?' \
+
+        # TODO: parse resulting data to obtain information
+    done
+   
+
 
 # TODO: conditionally send email to myself
