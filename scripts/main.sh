@@ -47,5 +47,5 @@ apiKey=$1
     if [ $atLeastOneMovie -ge 1 ]
     then 
         notification="The following movies are now available: ${foundList[@] }"
-        osascript -e `say ${notification}`
+        osascript -e `say ${notification}` # Resource: https://code-maven.com/display-notification-from-the-mac-command-line
     fi
